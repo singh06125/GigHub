@@ -81,9 +81,9 @@ body {
     }
 
 .btn {
-    font-size: 17px;
+    /*font-size: 17px;*/
+    /*padding: 7px 20px;*/
     border-radius: 9px;
-    padding: 7px 20px;
 }
 
 /*page-level styles*/
