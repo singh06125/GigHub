@@ -32,18 +32,23 @@ span.field-validation-error {
 .voffset {
     margin-top: 2px;
 }
+
 .voffset1 {
     margin-top: 5px;
 }
+
 .voffset2 {
     margin-top: 10px;
 }
+
 .voffset3 {
     margin-top: 20px;
 }
+
 .voffset4 {
     margin-top: 40px;
 }
+
 .voffset5 {
     margin-top: 80px;
 }
@@ -90,7 +95,7 @@ body {
 
 .form-control {
     font-size: 17px;
-    padding: 20px 15px;
+    height: 44px;
     border-radius: 9px;
 }
 
@@ -153,3 +158,14 @@ body {
             .gigs > li .details .genre {
                 font-size: 15px;
             }
+
+
+.gigs > li .actions
+{
+    font-size: 15px;
+    display: none;
+}
+
+.gigs > li:hover .actions{
+    display: block;
+}
