@@ -7,6 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet">
+
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
 
@@ -25,7 +26,7 @@
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
                     <li>@Html.ActionLink("Add A Gig", "Create", "Gigs")</li>
-     
+
                 </ul>
                 @Html.Partial("_LoginPartial")
             </div>
@@ -39,8 +40,82 @@
         </footer>
     </div>
 
-    @Scripts.Render("~/bundles/jquery")
-    @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/bundles/lib")
+
     @RenderSection("scripts", required: false)
+
+
+    <script type="text/x-template" id="notifications-template">
+        <ul class="notifications">
+                 <%
+                     _.each(notifications, function(notification){
+                         if (notification.Type == 1) { %>
+                             <li><span class="highlight"><%= notification.Gig.Artist.Name %></span> has canceled the gig at <%= notification.Gig.Venue %> at <%= moment(notification.Gig.DateTime).format("D MMM HH:mm") %>.</li>
+                         <% }
+
+                         else if (notification.Type == 2) {
+                             var changes = [],
+                                 originalValues = [],
+                                 newValues = [];
+
+                             if (notification.OriginalVenue != notification.Gig.Venue) {
+                                 changes.push('venue');
+                                 originalValues.push(notification.OriginalVenue);
+                                 newValues.push(notification.Gig.Venue);
+                             }
+
+                             if (notification.OriginalDateTime != notification.Gig.DateTime) {
+                                 changes.push('date/time');
+                                 originalValues.push(moment(notification.OriginalDateTime).format("D MMM HH:mm"));
+                                 newValues.push(moment(notification.Gig.DateTime).format("D MMM HH:mm"));
+                             }
+
+                         %>
+                             <li><span class="highlight"><%= notification.Gig.Artist.Name %></span> has changed the <%= changes.join(' and ') %> of the gig from <%= originalValues.join('/') %> to <%= newValues.join('/') %></li>
+                     <%
+                     }
+                 })
+                 %>
+             </ul>
+    </script>
+
+    <script>
+
+        $(document).ready(function () {
+            $.getJSON("/api/notifications", function (notifications) {
+                if (notifications.length == 0)
+                    return;
+                $(".js-notifications-count")
+                    .text(notifications.length)
+                    .removeClass("hide")
+                    .addClass("animate__animated animate__backInDown");
+
+
+                $(".notifications").popover({
+                    html: true,
+                    title: "Notifications",
+                    content: function () {
+
+                        var compiled = _.template($("#notifications-template").html());
+                        return compiled({ notifications: notifications });
+
+                    },
+                    placement: "bottom",
+                    template: '<div class="popover popover-notifications" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>'
+
+                }).on("shown.bs.popover", function () {
+                    $.post("/api/notifications/markasread")
+                        .done(function () {
+                            $(".js-notifications-count")
+                                .text("")
+                                .addClass("hide");
+                        });
+                });
+
+            });
+
+
+        });
+    </script>
 </body>
 </html>

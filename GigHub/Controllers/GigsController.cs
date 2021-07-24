@@ -56,6 +56,12 @@ namespace GigHub.Controllers
         }
 
 
+        public ActionResult Search(GigsViewModel gigsViewModel)
+        {
+            return RedirectToAction("Index", "Home", new { query = gigsViewModel.SearchTerm });
+        }
+
+
         [Authorize]
         public ActionResult Create()
         {
